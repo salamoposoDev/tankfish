@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>703282470352-7khs955tdrcev7t6ulrdtd3uubhdvalh.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.703282470352-7khs955tdrcev7t6ulrdtd3uubhdvalh</string>
+	<key>API_KEY</key>
+	<string>AIzaSyARygO3c3TiJ1tT7QnBqASyIIJpj2phXAc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>703282470352</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.tankFish</string>
+	<key>PROJECT_ID</key>
+	<string>tankfis</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tankfis.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:703282470352:ios:99c121c3f96e6d17ef6dd5</string>
+	<key>DATABASE_URL</key>
+	<string>https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>

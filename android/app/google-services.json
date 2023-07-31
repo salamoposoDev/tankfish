@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "703282470352",
+    "firebase_url": "https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tankfis",
+    "storage_bucket": "tankfis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703282470352:android:a5509065834a5e7def6dd5",
+        "android_client_info": {
+          "package_name": "com.example.tank_fish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "703282470352-0pllq7vta7oebbl9coqcvugf23sgrs69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd7uhTjyy7jb1K2W6xGrxiNGiVP7t2cXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "703282470352-0pllq7vta7oebbl9coqcvugf23sgrs69.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
