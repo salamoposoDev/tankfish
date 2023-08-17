@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tank_fish/models/device_info.dart';
@@ -104,35 +103,3 @@ final getHistoryScheduleProvider =
     return [];
   });
 });
-
-
-// final getHistoryScheduleProvider =
-//     StreamProvider.family<List<HistorySchedule>, String>((ref, sensorsPath) {
-//   return FirebaseDatabase.instance
-//       .ref('automation/$sensorsPath/history')
-//       .onValue
-//       .map((event) {
-//     if (event.snapshot.exists) {
-//       final jsonData = event.snapshot.value;
-
-//       List<HistorySchedule> historyScheduleList = [];
-//       historyScheduleList.clear();
-//       Map<dynamic, dynamic> map = event.snapshot.value as dynamic;
-//       List<dynamic> dataList = [];
-//       dataList.clear();
-//       dataList = map.values.toList();
-
-//       for (var data in dataList) {
-//         HistorySchedule historySchedule = HistorySchedule(
-//           servoDelay: data['servoDelay'],
-//           timeRtc: data['timeRtc'],
-//           time: data['time'],
-//           amount: data['amount'],
-//         );
-//         historyScheduleList.add(historySchedule);
-//       }
-//       return historyScheduleList;
-//     }
-//     return [];
-//   });
-// });

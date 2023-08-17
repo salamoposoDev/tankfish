@@ -18,58 +18,6 @@ class SensorPage extends ConsumerWidget {
   int activeIndex = 0;
   bool ispress = false;
 
-  final sensor = [
-    {
-      'name': 'Suhu',
-      'value': 30,
-      'status': 'Normal',
-      'symbol': '°C',
-      'logo': 'lib/icons/temp2.png'
-    },
-    {
-      'name': 'Suhu Air',
-      'value': 27,
-      'status': 'Normal',
-      'symbol': '°C',
-      'logo': 'lib/icons/water_temp.png'
-    },
-    {
-      'name': 'Kelembapan',
-      'value': 70,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/hum2.png'
-    },
-    {
-      'name': 'PH',
-      'value': 7.1,
-      'status': 'Normal',
-      'symbol': '',
-      'logo': 'lib/icons/ph_logo.png'
-    },
-    {
-      'name': 'TDS',
-      'value': 600,
-      'status': 'Normal',
-      'symbol': 'ppm',
-      'logo': 'lib/icons/ppm.png'
-    },
-    {
-      'name': 'Oksigen',
-      'value': 120,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/oxi.png'
-    },
-    {
-      'name': 'Level Air',
-      'value': 80,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/water_level.png'
-    },
-  ];
-
   final List<String> _dropdownItems = [
     'Tank Lele 1',
     'Tank Lele 2',
@@ -95,7 +43,6 @@ class SensorPage extends ConsumerWidget {
     final selectedSensorValue = ref.watch(selectedSensorValueProvider);
     final path = ref.watch(childPathProvider);
     final sensorValue = ref.watch(sensorsStreamProvider(path));
-    final minMaxValue = ref.watch(minMaxProvider);
     final sensorName = ref.watch(sensorNameProvider);
 
     if (sensorValue.isLoading) {
@@ -105,8 +52,6 @@ class SensorPage extends ConsumerWidget {
     }
     if (!loading) {
       Future.delayed(Duration.zero, () {
-        // Perform initialization or actions after the widget tree is done building
-
         ref.read(selectedSensorValueProvider.notifier).update((state) {
           return sensorValue.value!.temp!.toInt();
         });
