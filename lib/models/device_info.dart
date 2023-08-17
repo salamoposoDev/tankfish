@@ -1,21 +1,34 @@
+import 'dart:convert';
+
 class DeviceInfo {
-  int? rssi;
-  String? ipAddr;
-  String? macAddr;
+  final int? rssi;
+  final String? name;
+  final String? ipAddr;
+  final String? macAddr;
 
-  DeviceInfo({this.rssi, this.ipAddr, this.macAddr});
+  DeviceInfo({
+    this.rssi,
+    this.name,
+    this.ipAddr,
+    this.macAddr,
+  });
 
-  DeviceInfo.fromJson(Map<String, dynamic> json) {
-    rssi = json['rssi'] ?? 0;
-    ipAddr = json['ipAddr'] ?? '';
-    macAddr = json['macAddr'] ?? '';
-  }
+  factory DeviceInfo.fromRawJson(String str) =>
+      DeviceInfo.fromJson(json.decode(str));
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['rssi'] = this.rssi;
-    data['ipAddr'] = this.ipAddr;
-    data['macAddr'] = this.macAddr;
-    return data;
-  }
+  String toRawJson() => json.encode(toJson());
+
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) => DeviceInfo(
+        rssi: json["rssi"] ?? 0,
+        name: json["name"] ?? '',
+        ipAddr: json["ipAddr"] ?? '',
+        macAddr: json["macAddr"] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        "rssi": rssi,
+        "name": name,
+        "ipAddr": ipAddr,
+        "macAddr": macAddr,
+      };
 }

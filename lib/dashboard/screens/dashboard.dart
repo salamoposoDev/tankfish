@@ -1,47 +1,74 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tank_fish/constant.dart';
-import 'package:tank_fish/dashboard/screens/bloc/get_device_info.dart';
-import 'package:tank_fish/dashboard/screens/bloc/get_sensors_realtime_bolc.dart';
 import 'package:tank_fish/dashboard/widgets/common_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/device_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/feed_status_card.dart';
-import 'package:tank_fish/dashboard/widgets/image_card.dart';
-import 'package:tank_fish/dashboard/widgets/notification_card.dart';
-import 'package:tank_fish/models/device_info.dart';
-import 'package:tank_fish/models/realtime_sensors.dart';
+import 'package:tank_fish/dashboard/widgets/tankfish_dropdown.dart';
+import 'package:tank_fish/providers.dart';
+import 'package:tank_fish/providers/control_servo_provider.dart';
+import 'package:tank_fish/providers/stream_data_sensor.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   DashboardScreen({super.key});
-  final ValueNotifier<String> _selectedItem = ValueNotifier<String>('');
 
-  List<String> _dropdownItems = [
-    'Lele 1',
-    'Lele 2',
-    'Udang 1',
-    'Udang 2',
-    'Kakap 1',
-    'Kakap 2'
+  final List<String> _dropdownItems = [
+    'Tank Lele 1',
+    'Tank Lele 2',
+    'Tank Udang 1',
+    'Tank Udang 2',
+    'Tank Kakap 1',
+    'Tank Kakap 2'
+  ];
+  final lockList = [false, true, true, true, true, true];
+
+  final List<String> _dropdownItemsValue = [
+    's-A0:B7:65:DC:42:F0',
+    's-A0:B7:65:DD:30:44',
+    's-A0:B7:65:DC:5C:44',
+    's-A0:B7:65:DD:C8:E8',
+    's-E0:5A:1B:A1:61:F0',
+    's-A0:B7:65:DC:65:7C'
   ];
 
   @override
-  Widget build(BuildContext context) {
-    // final ref = FirebaseDatabase.instance.ref('sensors');
-    // ref.onValue.listen((event) {
-    //   if (event.snapshot.exists) {
-    //     final json = jsonEncode(event.snapshot.value);
-    //     log(json);
-    //   }
-    // });
-    late int timestamp;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedItem = ref.watch(selectedTankProvider);
+    final selectedValue = ref.watch(childPathProvider);
+    final selectedLock = ref.watch(selectedLockProvider);
+    final dataSensors = ref.watch(sensorsStreamProvider(selectedValue));
+    final deviceInfo = ref.watch(getDeviceInfoProvider(selectedValue));
+    final schedule = ref.watch(getScheduleProvider('au-A0:B7:65:DD:58:50'));
+    final history =
+        ref.watch(getHistoryScheduleProvider('au-A0:B7:65:DD:58:50'));
+    final servoStatus =
+        ref.watch(getServoStatusProvider('au-A0:B7:65:DD:58:50'));
+    if (dataSensors.isLoading ||
+        deviceInfo.isLoading ||
+        schedule.isLoading ||
+        history.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (dataSensors.hasError ||
+        deviceInfo.hasError ||
+        schedule.hasError ||
+        history.hasError) {
+      return const Center(child: Text('error'));
+    }
+
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(dataSensors.value!.time! * 1000);
+    final status = isDeviceOnline(dateTime);
+    final lastUpdate = checkRelativeTime(dataSensors.value!.time!);
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Colors.grey.shade100,
       body: SafeArea(
           child: SingleChildScrollView(
         child: Padding(
@@ -50,118 +77,87 @@ class DashboardScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      Image.asset(
-                        'lib/icons/logo_tankfis.png',
-                        height: 28.h,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        'Tank',
-                        style: GoogleFonts.aBeeZee(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.sp,
-                            color: AppColors.midnightBlue),
-                      ),
-                      Text(
-                        'Fish',
-                        style: GoogleFonts.aBeeZee(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.sp,
-                            color: AppColors.blue),
+                      TankFisDropdown(
+                          onSelect: (value) {
+                            var index = int.parse(value);
+                            final selectedValue = _dropdownItemsValue[index];
+                            ref.read(selectedLockProvider.notifier).state =
+                                lockList[index];
+                            ref.read(selectedTankProvider.notifier).state =
+                                _dropdownItems[index];
+                            ref
+                                .read(childPathProvider.notifier)
+                                .update((state) => selectedValue);
+                          },
+                          selectedItem: selectedItem,
+                          dropdownItems: _dropdownItems,
+                          dropdownItemsValue: _dropdownItemsValue),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: 16.r,
+                        child: const Icon(
+                          Icons.person,
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
-                  ValueListenableBuilder(
-                    valueListenable: _selectedItem,
-                    builder: (context, value, child) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                              color: Colors.blue.shade400, width: 1.5),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: DropdownButton<String>(
-                          iconEnabledColor: Colors.blue,
-                          borderRadius: BorderRadius.circular(16.r),
-                          underline: Container(),
-                          style: GoogleFonts.roboto(
-                              fontSize: 16, color: Colors.black),
-                          isDense: true,
-                          // value: value,
-                          hint: Text(value),
-                          onChanged: (newValue) {
-                            _selectedItem.value = newValue!;
-                          },
-                          items: _dropdownItems
-                              .map((String value) => DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  ))
-                              .toList(),
-                        ),
-                      );
-                    },
-                  ),
-                  // Row(
-                  //   children: [
-                  //     CircleAvatar(
-                  //       backgroundColor: AppColors.serenity,
-                  //       radius: 16.r,
-                  //       child: const Icon(
-                  //         Icons.person,
-                  //         color: AppColors.white,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
               SizedBox(height: 16.h),
-              BlocBuilder<RealtimeSensorCubit, Sensors>(
-                  builder: (context, data) {
-                timestamp = data.time ?? 0;
-                return CommonInfoCard(
-                  waterTemp: data.waterTemp,
-                  phValue: data.ph.toString(),
-                  oxygenValue: data.oxygen,
-                );
-              }),
-              SizedBox(height: 16.h),
-              const NotificationCard(),
-              SizedBox(height: 20.h),
-              FeedStatusCard(),
-              SizedBox(height: 16.h),
-              BlocBuilder<DeviceInfoCubit, DeviceInfo>(
-                  builder: (context, dataDevice) {
-                DateTime dateTime =
-                    DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-                final status = isDeviceOnline(dateTime);
-                final lastUpdate = checkRelativeTime(timestamp);
-                return DeviceInfoCard(
-                  status: status == true ? 'Online' : 'Offline',
-                  rssi: dataDevice.rssi,
-                  ipAddress: dataDevice.ipAddr,
-                  macAddr: dataDevice.macAddr,
-                  time: lastUpdate,
-                );
-              }),
+              CommonInfoCard(
+                waterTemp: dataSensors.value!.waterTemp!.toInt(),
+                phValue: dataSensors.value!.ph.toString(),
+                oxygenValue: dataSensors.value!.tds,
+              ),
+              // Column(
+              //   children: [
+              //     SizedBox(height: 16.h),
+              //     NotificationCard(),
+              //   ],
+              // ),
               SizedBox(height: 16.h),
               Text(
-                'Latest Capture',
-                style: GoogleFonts.poppins(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.midnightBlue),
+                'Otomasi',
+                style:
+                    GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
               ),
               SizedBox(height: 8.h),
-              const ImageCard(),
+              FeedStatusCard(
+                disable: selectedLock,
+                servoStatus: servoStatus,
+                onPressed: () {
+                  FirebaseDatabase.instance
+                      .ref('automation/au-A0:B7:65:DD:58:50/control/servo')
+                      .set(1);
+                },
+                lastFeed: history.value!.last,
+                schedule: schedule.value,
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Info Perangkat',
+                style:
+                    GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
+              ),
+              SizedBox(height: 8.h),
+              DeviceInfoCard(
+                status: status == true ? 'Online' : 'Offline',
+                rssi: deviceInfo.value!.rssi,
+                ipAddress: deviceInfo.value!.ipAddr,
+                macAddr: deviceInfo.value!.macAddr,
+                time: lastUpdate,
+              ),
+              SizedBox(height: 16.h),
             ],
           ),
         ),
@@ -172,7 +168,7 @@ class DashboardScreen extends StatelessWidget {
 
 bool isDeviceOnline(DateTime dbTime) {
   DateTime currentDateTime = DateTime.now();
-  int toleranceSeconds = 10;
+  int toleranceSeconds = 30;
   int timeDifference = currentDateTime.difference(dbTime).inSeconds.abs();
   if (timeDifference <= toleranceSeconds) {
     return true;

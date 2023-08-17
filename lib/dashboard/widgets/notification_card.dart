@@ -13,12 +13,12 @@ class NotificationCard extends StatelessWidget {
       width: double.maxFinite.w,
       padding: EdgeInsets.all(8.h),
       decoration: BoxDecoration(
-        color: Colors.red.shade100,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
+          color: Colors.red.shade100,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.red)),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.info,
             color: Colors.red,
           ),

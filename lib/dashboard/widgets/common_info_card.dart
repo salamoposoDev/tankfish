@@ -22,35 +22,51 @@ class CommonInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16).h,
       width: double.maxFinite.w,
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            blurRadius: 20,
-            offset: const Offset(10, 10),
-            color: AppColors.midnightBlue.withOpacity(0.2),
-          )
+            blurRadius: 2,
+            offset: const Offset(5, 5),
+            color: Colors.grey.shade300,
+          ),
+          const BoxShadow(
+            blurRadius: 2,
+            offset: Offset(-5, -5),
+            color: Colors.white,
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.asset(
-                'lib/icons/farmer.png',
-                height: 50.h,
-              ),
-              Expanded(
-                child: Text(
-                  'Halo, Jangan lupa cek kondisi ikanmu hari ini',
-                  style: GoogleFonts.mulish(
-                    color: AppColors.midnightBlue,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14.sp,
+              Row(
+                children: [
+                  Image.asset(
+                    'lib/icons/logo_tankfis.png',
+                    height: 45.h,
                   ),
-                ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Tank',
+                    style: GoogleFonts.roboto(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                        color: AppColors.midnightBlue),
+                  ),
+                  Text(
+                    'Fis',
+                    style: GoogleFonts.roboto(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                        color: Colors.black),
+                  ),
+                ],
               ),
+              Divider(thickness: 2.h),
               SizedBox(width: 8.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,17 +74,17 @@ class CommonInfoCard extends StatelessWidget {
                   Text(
                     'Konsumsi Pakan',
                     style: GoogleFonts.poppins(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.midnightBlue,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 12.sp,
                     ),
                   ),
                   RichText(
                     text: TextSpan(
-                      text: usedFeed != null ? usedFeed.toString() : '2,3',
+                      text: usedFeed != null ? usedFeed.toString() : '0,0',
                       style: GoogleFonts.poppins(
-                        color: AppColors.midnightBlue,
-                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
                         fontSize: 28.sp,
                       ),
                       children: [
@@ -78,7 +94,7 @@ class CommonInfoCard extends StatelessWidget {
                         TextSpan(
                           text: '/day',
                           style: GoogleFonts.mulish(
-                            color: AppColors.midnightBlue,
+                            color: Colors.black,
                             fontWeight: FontWeight.w300,
                             fontSize: 12.sp,
                           ),
@@ -105,14 +121,14 @@ class CommonInfoCard extends StatelessWidget {
                       Image.asset(
                         'lib/icons/termometerLogo.png',
                         scale: 1.5.h,
-                        color: AppColors.blue,
+                        color: Colors.black,
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         waterTemp != null ? '$waterTemp °C' : '26°C',
                         style: GoogleFonts.mulish(
-                          color: AppColors.midnightBlue,
-                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
                           fontSize: 16.sp,
                         ),
                       ),
@@ -136,14 +152,14 @@ class CommonInfoCard extends StatelessWidget {
                       Image.asset(
                         'lib/icons/hum.png',
                         scale: 1.5.h,
-                        color: AppColors.blue,
+                        color: Colors.black,
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         phValue != null ? '$phValue' : '7.5',
                         style: GoogleFonts.mulish(
-                          color: AppColors.midnightBlue,
-                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
                           fontSize: 16.sp,
                         ),
                       ),
@@ -167,14 +183,13 @@ class CommonInfoCard extends StatelessWidget {
                       Image.asset(
                         'lib/icons/wind.png',
                         scale: 1.5.h,
-                        color: AppColors.blue,
+                        color: Colors.black,
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        oxygenValue != null ? '$oxygenValue %' : '60%',
+                        oxygenValue != null ? '$oxygenValue ppm' : '0 ppm',
                         style: GoogleFonts.mulish(
-                          color: AppColors.midnightBlue,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           fontSize: 16.sp,
                         ),
                       ),
@@ -182,9 +197,9 @@ class CommonInfoCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Oksigen',
+                    'TDS',
                     style: GoogleFonts.roboto(
-                      color: AppColors.midnightBlue,
+                      color: Colors.black,
                       fontWeight: FontWeight.w300,
                       fontSize: 12.sp,
                     ),

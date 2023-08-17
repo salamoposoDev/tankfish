@@ -1,33 +1,22 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tank_fish/constant.dart';
-import 'package:tank_fish/dashboard/screens/bloc/get_sensors_realtime_bolc.dart';
-import 'package:tank_fish/models/realtime_sensors.dart';
+import 'package:tank_fish/providers.dart';
+import 'package:tank_fish/providers/stream_data_sensor.dart';
 import 'package:tank_fish/sensors/realtime_chart.dart';
+import 'package:tank_fish/sensors/widgets/sensor_card_list.dart';
+import '../dashboard/widgets/tankfish_dropdown.dart';
 
-class SensorPage extends StatefulWidget {
-  const SensorPage({super.key});
+class SensorPage extends ConsumerWidget {
+  SensorPage({super.key});
 
-  @override
-  State<SensorPage> createState() => _SensorPageState();
-}
-
-class _SensorPageState extends State<SensorPage> {
   late List<LiveData> chartData;
   int activeIndex = 0;
   bool ispress = false;
-
-  @override
-  void initState() {
-    chartData = getChartData();
-    super.initState();
-  }
 
   final sensor = [
     {
@@ -80,8 +69,51 @@ class _SensorPageState extends State<SensorPage> {
       'logo': 'lib/icons/water_level.png'
     },
   ];
+
+  final List<String> _dropdownItems = [
+    'Tank Lele 1',
+    'Tank Lele 2',
+    'Tank Udang 1',
+    'Tank Udang 2',
+    'Tank Kakap 1',
+    'Tank Kakap 2'
+  ];
+
+  final List<String> _dropdownItemsValue = [
+    's-A0:B7:65:DC:42:F0',
+    's-A0:B7:65:DD:30:44',
+    's-A0:B7:65:DC:5C:44',
+    's-A0:B7:65:DD:C8:E8',
+    's-E0:5A:1B:A1:61:F0',
+    's-A0:B7:65:DC:65:7C'
+  ];
+  bool loading = false;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedItem = ref.watch(selectedTankProvider);
+    final selectedSensorValue = ref.watch(selectedSensorValueProvider);
+    final path = ref.watch(childPathProvider);
+    final sensorValue = ref.watch(sensorsStreamProvider(path));
+    final minMaxValue = ref.watch(minMaxProvider);
+    final sensorName = ref.watch(sensorNameProvider);
+
+    if (sensorValue.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (!loading) {
+      Future.delayed(Duration.zero, () {
+        // Perform initialization or actions after the widget tree is done building
+
+        ref.read(selectedSensorValueProvider.notifier).update((state) {
+          return sensorValue.value!.temp!.toInt();
+        });
+      });
+      loading = true;
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SingleChildScrollView(
@@ -91,191 +123,68 @@ class _SensorPageState extends State<SensorPage> {
             // SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.all(16.h),
-              child: Text(
-                'Realtime Sensors',
-                style: GoogleFonts.poppins(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.midnightBlue),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TankFisDropdown(
+                      onSelect: (value) {
+                        var index = int.parse(value);
+                        final selectedValue = _dropdownItemsValue[index];
+                        ref.read(selectedTankProvider.notifier).state =
+                            _dropdownItems[index];
+                        ref
+                            .read(childPathProvider.notifier)
+                            .update((state) => selectedValue);
+                      },
+                      selectedItem: selectedItem,
+                      dropdownItems: _dropdownItems,
+                      dropdownItemsValue: _dropdownItemsValue),
+                  Text(
+                    'Sensors',
+                    style: GoogleFonts.poppins(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black),
+                  ),
+                ],
               ),
             ),
-
-            BlocBuilder<RealtimeSensorCubit, Sensors>(builder: (context, data) {
-              List sensorData = [];
-              sensorData.addAll([
-                data.temp,
-                data.waterTemp,
-                data.hum,
-                data.ph,
-                data.tds,
-                data.oxygen,
-                data.waterLevel,
-              ]);
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: GridView.builder(
-                    clipBehavior: Clip.none,
-                    itemCount: sensor.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                    ),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              ispress = !ispress;
-                              activeIndex = index;
-                            });
-                          },
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: SensorcCard(
-                              isPressed: activeIndex == index ? true : false,
-                              name: sensor[index]['name'].toString(),
-                              value: sensorData[index].toString(),
-                              symbol: sensor[index]['symbol'].toString(),
-                              logo: sensor[index]['logo'].toString(),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-              );
+            RealtimeChart(
+              timestamp: sensorValue.value!.time!,
+              sensorValue: selectedSensorValue,
+              sensorName: sensorName,
+            ),
+            SensorCardList(onSelected: (name, value) {
+              ref.read(sensorNameProvider.notifier).state = name;
+              final nilai = minMax(name);
+              ref.read(minMaxProvider.notifier).state = nilai;
+              log(nilai.toString());
+              log('$name : $value');
             }),
           ],
         ),
       ),
     );
   }
-
-  List<LiveData> getChartData() {
-    return <LiveData>[
-      LiveData(0, 42),
-      LiveData(1, 47),
-      LiveData(2, 43),
-      LiveData(3, 49),
-      LiveData(4, 54),
-      LiveData(5, 41),
-      LiveData(6, 58),
-      LiveData(7, 51),
-      LiveData(8, 98),
-      LiveData(9, 41),
-      LiveData(10, 53),
-      LiveData(11, 72),
-      LiveData(12, 86),
-      LiveData(13, 52),
-      LiveData(14, 94),
-      LiveData(15, 92),
-      LiveData(16, 86),
-      LiveData(17, 72),
-      LiveData(18, 94),
-    ];
-  }
 }
 
-class SensorcCard extends StatelessWidget {
-  const SensorcCard({
-    super.key,
-    this.logo,
-    this.value,
-    this.status,
-    this.name,
-    this.symbol,
-    this.isPressed = false,
-  });
-  final String? logo;
-  final String? value;
-  final String? status;
-  final String? name;
-  final String? symbol;
-  final bool? isPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      decoration: BoxDecoration(
-        color: isPressed! ? Colors.orange.shade100 : Colors.blue.shade100,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          if (isPressed!)
-            BoxShadow(
-              blurRadius: 7,
-              offset: const Offset(5, 5),
-              color: isPressed! ? Colors.grey.shade500 : Colors.blue.shade200,
-            ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16.h),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              name ?? 'Suhu',
-              style: GoogleFonts.poppins(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade800),
-            ),
-            SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      value ?? '0',
-                      style: GoogleFonts.roboto(
-                          fontSize: isPressed! ? 30.sp : 28.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey.shade800),
-                    ),
-                    Text(
-                      ' $symbol',
-                      style: GoogleFonts.poppins(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.midnightBlue),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  status ?? 'normal',
-                  style: GoogleFonts.roboto(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey.shade800),
-                ),
-                Image.asset(
-                  logo!,
-                  height: 45.h,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+List<double> minMax(String? name) {
+  List<double> value = [];
+  switch (name) {
+    case 'Suhu':
+      return value = [10, 60];
+    case 'Suhu Air':
+      return value = [10, 60];
+    case 'Kelembapan':
+      return value = [10, 100];
+    case 'PH':
+      return value = [3.5, 11.0];
+    case 'TDS':
+      return value = [50, 5000];
+    case 'Oksigen':
+      return value = [0, 100];
+    case 'Level Air':
+      return value = [0, 100];
   }
-}
-
-class LiveData {
-  LiveData(this.time, this.speed);
-  final int time;
-  final num speed;
+  return value;
 }

@@ -1,16 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tank_fish/dashboard/screens/bloc/get_device_info.dart';
-import 'package:tank_fish/dashboard/screens/bloc/get_sensors_realtime_bolc.dart';
-import 'package:tank_fish/firebase_options.dart';
 import 'package:tank_fish/home_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,16 +20,9 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
+        return const MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                  create: (context) => RealtimeSensorCubit()..getData()),
-              BlocProvider(create: (context) => DeviceInfoCubit()..getData()),
-            ],
-            child: HomePage(),
-          ),
+          home: HomePage(),
         );
       },
     );

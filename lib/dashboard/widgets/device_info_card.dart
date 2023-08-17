@@ -31,8 +31,9 @@ class _DeviceInfoCardState extends State<DeviceInfoCard> {
       width: double.maxFinite.w,
       padding: EdgeInsets.all(8.h),
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border.all(
-          color: AppColors.midnightBlue.withOpacity(0.2),
+          color: Colors.grey.shade400,
         ),
         borderRadius: BorderRadius.circular(8.r),
       ),
@@ -49,11 +50,12 @@ class _DeviceInfoCardState extends State<DeviceInfoCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Info Perangkat',
+                  'Sensors',
                   style: GoogleFonts.poppins(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.midnightBlue),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.midnightBlue,
+                  ),
                 ),
                 Icon(
                   !showMore

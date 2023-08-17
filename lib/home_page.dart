@@ -4,9 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tank_fish/constant.dart';
 import 'package:tank_fish/dashboard/screens/dashboard.dart';
 import 'package:tank_fish/history/history_page.dart';
-import 'package:tank_fish/models/realtime_sensors.dart';
-import 'package:tank_fish/sensors/realtime_chart.dart';
 import 'package:tank_fish/sensors/sensors_page.dart';
+import 'package:tank_fish/setting_page/setting_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,7 +21,7 @@ class _HomePageState extends State<HomePage> {
     DashboardScreen(),
     SensorPage(),
     HistoryPage(),
-    Center(child: Text('Under Developmnet')),
+    SettingPage(),
   ];
   @override
   Widget build(BuildContext context) {
