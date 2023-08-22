@@ -46,3 +46,8 @@ class RealtimeChartController extends StateNotifier<List<LiveData>> {
     }
   }
 }
+
+
+// final sensorPathProvider = StreamProvider((ref) {
+
+// })

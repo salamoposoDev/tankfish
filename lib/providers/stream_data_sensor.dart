@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tank_fish/models/device_info.dart';
@@ -38,39 +39,41 @@ final getDeviceInfoProvider =
 });
 
 final getScheduleProvider =
-    FutureProvider.family<List<Map<String, dynamic>>, String>(
-        (ref, sensorsPath) async {
-  final ref = await FirebaseDatabase.instance
-      .ref('automation/$sensorsPath/schedule')
-      .once();
+    StreamProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, sensorsPath) {
+  final stream = FirebaseDatabase.instance
+      .ref()
+      .child('automation/$sensorsPath/schedule')
+      .onValue;
+  return stream.map(
+    (event) {
+      if (event.snapshot.exists) {
+        final jsonString = jsonEncode(event.snapshot.value);
 
-  if (ref.snapshot.exists) {
-    final jsonString = jsonEncode(ref.snapshot.value);
+        Map<String, dynamic> jsonData = json.decode(jsonString);
 
-    Map<String, dynamic> jsonData = json.decode(jsonString);
+        List<Map<String, dynamic>> timeDataList = [];
 
-    List<Map<String, dynamic>> timeDataList = [];
+        jsonData.forEach((key, value) {
+          if (value is Map<String, dynamic> &&
+              value.containsKey("amount") &&
+              value.containsKey("time")) {
+            int amount = value["amount"];
+            String time = value["time"];
 
-    jsonData.forEach((key, value) {
-      if (value is Map<String, dynamic> &&
-          value.containsKey("amount") &&
-          value.containsKey("time")) {
-        int amount = value["amount"];
-        String time = value["time"];
+            Map<String, dynamic> timeDataMap = {
+              "amount": amount,
+              "time": time,
+            };
 
-        Map<String, dynamic> timeDataMap = {
-          "amount": amount,
-          "time": time,
-        };
-
-        timeDataList.add(timeDataMap);
+            timeDataList.add(timeDataMap);
+          }
+        });
+        return timeDataList;
       }
-    });
-
-    return timeDataList;
-  } else {
-    return [];
-  }
+      return [];
+    },
+  );
 });
 
 final getHistoryScheduleProvider =
@@ -100,6 +103,92 @@ final getHistoryScheduleProvider =
       }
       return historyScheduleList;
     }
-    return [];
+    return [HistorySchedule()];
+  });
+});
+
+final idAndNamePathProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
+  final stream = FirebaseDatabase.instance.ref('sensors');
+  return stream.onValue.map((event) {
+    if (event.snapshot.exists) {
+      final jsonData = json.encode(event.snapshot.value);
+      Map<String, dynamic> data = json.decode(jsonData);
+      List<Map<String, dynamic>> idAndNameList = [];
+      data.forEach((key, value) {
+        if (value is Map<String, dynamic> &&
+            value.containsKey('id') &&
+            value.containsKey('name')) {
+          idAndNameList.add({'name': value['name'], 'id': value['id']});
+        }
+        idAndNameList.sort((a, b) => a['name'].compareTo(b['name']));
+        // log(idAndNameList.length.toString());
+      });
+      return idAndNameList;
+    } else {
+      return [];
+    }
+  });
+});
+
+final getTodayHistorySensor =
+    StreamProvider.family<List<Sensors>, String>((ref, path) {
+  final stream = FirebaseDatabase.instance.ref('sensors/');
+  return stream.child('$path/history').onValue.map((event) {
+    if (event.snapshot.exists) {
+      // final historyList = [];
+      // for (var element in event.snapshot.children) {
+      //   historyList.add(element.value);
+      //   // log(historyList.length.toString());
+      // }
+      // final jsonString = jsonEncode(historyList);
+      // final jsonData = jsonDecode(jsonString);
+      // List<Sensors> historySensor = (jsonData as List)
+      //     .map((itemWord) => Sensors.fromJson(itemWord))
+      //     .toList();
+
+      // return historySensor;
+      final jsonData = jsonEncode(event.snapshot.value);
+      Map<String, dynamic> dataMap = json.decode(jsonData);
+
+      int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      List<Sensors> todayDataList = [];
+
+      dataMap.forEach((key, value) {
+        int timestamp = value['time'];
+        DateTime dateTime =
+            DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+        if (DateTime.now().hour.toString() == '0') {
+          if (dateTime.year == DateTime.now().year &&
+              dateTime.month == DateTime.now().month &&
+              dateTime.day == 21) {
+            todayDataList.add(Sensors.fromJson(value));
+          }
+        } else {
+          if (dateTime.year == DateTime.now().year &&
+              dateTime.month == DateTime.now().month &&
+              dateTime.day == DateTime.now().day) {
+            todayDataList.add(Sensors.fromJson(value));
+          }
+        }
+      });
+      return todayDataList;
+    } else {
+      return [];
+    }
+  });
+});
+
+final getDetailSensorsHistory =
+    StreamProvider.family<Map<String, dynamic>, String>((ref, path) {
+  final stream = FirebaseDatabase.instance.ref('sensors/');
+  return stream.child('$path/history').onValue.map((event) {
+    if (event.snapshot.exists) {
+      final jsonData = jsonEncode(event.snapshot.value);
+      Map<String, dynamic> dataMap = json.decode(jsonData);
+      return dataMap;
+    } else {
+      return {};
+    }
   });
 });

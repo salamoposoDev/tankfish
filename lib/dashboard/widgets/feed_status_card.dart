@@ -11,7 +11,7 @@ import 'package:tank_fish/dashboard/widgets/card_schedule.dart';
 import 'package:tank_fish/models/history_schedule_model.dart';
 
 class FeedStatusCard extends StatelessWidget {
-  const FeedStatusCard({
+  FeedStatusCard({
     super.key,
     this.schedule,
     this.lastFeed,
@@ -27,8 +27,9 @@ class FeedStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timestamp = lastFeed!.time!.toInt();
-    final formatedTime = parseTimestampToTime(timestamp);
+    int timestamp = lastFeed?.time != null ? lastFeed!.time!.toInt() : 0;
+    String formatedTime = parseTimestampToTime(timestamp);
+
     if (disable) {
       return Container(
         width: double.maxFinite.w,
@@ -47,83 +48,88 @@ class FeedStatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Terakhir',
-                  style: GoogleFonts.poppins(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.midnightBlue),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      lastFeedTime(timestamp),
-                      style: GoogleFonts.roboto(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    ),
-                    SizedBox(width: 6.w),
-                    Icon(
-                      Icons.lock_clock,
-                      size: 16.h,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            IntrinsicHeight(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            if (lastFeed?.time != null && lastFeed?.amount != null)
+              Column(
                 children: [
-                  Image.asset(
-                    'lib/icons/timeForwad.png',
-                    height: 18.h,
-                  ),
-                  Text(
-                    formatedTime,
-                    style: GoogleFonts.poppins(
-                        fontSize: 30.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.midnightBlue),
-                  ),
-                  VerticalDivider(
-                    thickness: 3.h,
-                    indent: 5,
-                    endIndent: 5,
-                  ),
-                  Image.asset(
-                    'lib/icons/soup.png',
-                    height: 18.h,
-                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${lastFeed!.amount}',
+                        'Terakhir',
                         style: GoogleFonts.poppins(
-                            fontSize: 30.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.midnightBlue),
                       ),
-                      Text(
-                        ' gr',
-                        style: GoogleFonts.poppins(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.midnightBlue),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            lastFeedTime(timestamp),
+                            style: GoogleFonts.roboto(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                          SizedBox(width: 6.w),
+                          Icon(
+                            Icons.lock_clock,
+                            size: 16.h,
+                            color: Colors.black,
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  IntrinsicHeight(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Image.asset(
+                          'lib/icons/timeForwad.png',
+                          height: 18.h,
+                        ),
+                        Text(
+                          formatedTime,
+                          style: GoogleFonts.poppins(
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.midnightBlue),
+                        ),
+                        VerticalDivider(
+                          thickness: 3.h,
+                          indent: 5,
+                          endIndent: 5,
+                        ),
+                        Image.asset(
+                          'lib/icons/soup.png',
+                          height: 18.h,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              '${lastFeed!.amount}',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 30.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.midnightBlue),
+                            ),
+                            Text(
+                              ' gr',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.midnightBlue),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(thickness: 1.h),
+                  SizedBox(height: 8.h),
                 ],
               ),
-            ),
-            Divider(thickness: 1.h),
-            SizedBox(height: 8.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -233,83 +239,88 @@ class FeedStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Terakhir',
-                style: GoogleFonts.poppins(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.midnightBlue),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    lastFeedTime(timestamp),
-                    style: GoogleFonts.roboto(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ),
-                  SizedBox(width: 6.w),
-                  Icon(
-                    Icons.timelapse,
-                    size: 16.h,
-                    color: Colors.black,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          IntrinsicHeight(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          if (lastFeed?.time != null && lastFeed?.amount != null)
+            Column(
               children: [
-                Image.asset(
-                  'lib/icons/timeForwad.png',
-                  height: 18.h,
-                ),
-                Text(
-                  formatedTime,
-                  style: GoogleFonts.poppins(
-                      fontSize: 30.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.midnightBlue),
-                ),
-                VerticalDivider(
-                  thickness: 3.h,
-                  indent: 5,
-                  endIndent: 5,
-                ),
-                Image.asset(
-                  'lib/icons/soup.png',
-                  height: 18.h,
-                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${lastFeed!.amount}',
+                      'Terakhir',
                       style: GoogleFonts.poppins(
-                          fontSize: 30.sp,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.midnightBlue),
                     ),
-                    Text(
-                      ' gr',
-                      style: GoogleFonts.poppins(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.midnightBlue),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          lastFeedTime(timestamp),
+                          style: GoogleFonts.roboto(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black),
+                        ),
+                        SizedBox(width: 6.w),
+                        Icon(
+                          Icons.timelapse,
+                          size: 16.h,
+                          color: Colors.black,
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                IntrinsicHeight(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image.asset(
+                        'lib/icons/timeForwad.png',
+                        height: 18.h,
+                      ),
+                      Text(
+                        formatedTime,
+                        style: GoogleFonts.poppins(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.midnightBlue),
+                      ),
+                      VerticalDivider(
+                        thickness: 3.h,
+                        indent: 5,
+                        endIndent: 5,
+                      ),
+                      Image.asset(
+                        'lib/icons/soup.png',
+                        height: 18.h,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '${lastFeed!.amount}',
+                            style: GoogleFonts.poppins(
+                                fontSize: 30.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.midnightBlue),
+                          ),
+                          Text(
+                            ' gr',
+                            style: GoogleFonts.poppins(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.midnightBlue),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(thickness: 1.h),
+                SizedBox(height: 8.h),
               ],
             ),
-          ),
-          Divider(thickness: 1.h),
-          SizedBox(height: 8.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
