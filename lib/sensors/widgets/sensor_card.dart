@@ -66,9 +66,12 @@ class SensorcCard extends StatelessWidget {
                     Text(
                       value ?? '0',
                       style: GoogleFonts.roboto(
-                          fontSize: isPressed! ? 30.sp : 28.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey.shade800),
+                        fontSize: isPressed! ? 30.sp : 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade800,
+                      ),
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       ' $symbol',

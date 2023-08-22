@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tank_fish/providers.dart';
@@ -72,23 +71,6 @@ class _SensorCardListState extends ConsumerState<SensorCardList> {
     },
   ];
 
-  final List<String> _dropdownItems = [
-    'Tank Lele 1',
-    'Tank Lele 2',
-    'Tank Udang 1',
-    'Tank Udang 2',
-    'Tank Kakap 1',
-    'Tank Kakap 2'
-  ];
-
-  final List<String> _dropdownItemsValue = [
-    's-A0:B7:65:DC:42:F0',
-    's-A0:B7:65:DD:30:44',
-    's-A0:B7:65:DC:5C:44',
-    's-A0:B7:65:DD:C8:E8',
-    's-E0:5A:1B:A1:61:F0',
-    's-A0:B7:65:DC:65:7C'
-  ];
   @override
   Widget build(BuildContext context) {
     final path = ref.watch(childPathProvider);

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tank_fish/constant.dart';
 import 'package:tank_fish/dashboard/screens/dashboard.dart';
-import 'package:tank_fish/history/history_page.dart';
+import 'package:tank_fish/history_page/history_page.dart';
 import 'package:tank_fish/sensors/sensors_page.dart';
 import 'package:tank_fish/setting_page/setting_page.dart';
 

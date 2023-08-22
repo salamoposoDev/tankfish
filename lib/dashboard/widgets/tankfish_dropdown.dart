@@ -7,13 +7,15 @@ import 'package:tank_fish/constant.dart';
 class TankFisDropdown extends ConsumerStatefulWidget {
   const TankFisDropdown(
       {super.key,
-      required this.dropdownItems,
-      required this.dropdownItemsValue,
+      this.dropdownItems,
+      this.dropdownItemsValue,
       this.onSelect,
-      required this.selectedItem});
+      required this.selectedItem,
+      required this.idAndName});
 
-  final List<String> dropdownItems;
-  final List<String> dropdownItemsValue;
+  final List<String>? dropdownItems;
+  final List<String>? dropdownItemsValue;
+  final List<Map<String, dynamic>> idAndName;
   final void Function(String)? onSelect;
   final String selectedItem;
 
@@ -27,7 +29,7 @@ class _TankFisDropdownState extends ConsumerState<TankFisDropdown> {
   @override
   void initState() {
     super.initState();
-    selectedValue = widget.dropdownItemsValue[0];
+    selectedValue = widget.idAndName[0]['id'];
   }
 
   @override
@@ -64,10 +66,10 @@ class _TankFisDropdownState extends ConsumerState<TankFisDropdown> {
             widget.onSelect!(newValue!);
           },
           items: [
-            for (int i = 0; i < widget.dropdownItems.length; i++)
+            for (int i = 0; i < widget.idAndName.length; i++)
               DropdownMenuItem<String>(
                 value: i.toString(),
-                child: Text(widget.dropdownItems[i]),
+                child: Text(widget.idAndName[i]['name']),
               ),
           ]),
     );

@@ -89,11 +89,13 @@ class SettingPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TankFisDropdown(
-                    onSelect: (value) {},
-                    selectedItem: _dropdownItems[0],
-                    dropdownItems: _dropdownItems,
-                    dropdownItemsValue: _dropdownItemsValue),
+                // TankFisDropdown(
+                //   onSelect: (value) {},
+                //   selectedItem: _dropdownItems[0],
+                //   dropdownItems: _dropdownItems,
+                //   dropdownItemsValue: _dropdownItemsValue,
+                //   idAndName: [],
+                // ),
                 Text(
                   'Setting',
                   style: GoogleFonts.poppins(

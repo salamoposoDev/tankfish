@@ -17,101 +17,32 @@ class SensorPage extends ConsumerWidget {
   late List<LiveData> chartData;
   int activeIndex = 0;
   bool ispress = false;
-
-  final sensor = [
-    {
-      'name': 'Suhu',
-      'value': 30,
-      'status': 'Normal',
-      'symbol': '°C',
-      'logo': 'lib/icons/temp2.png'
-    },
-    {
-      'name': 'Suhu Air',
-      'value': 27,
-      'status': 'Normal',
-      'symbol': '°C',
-      'logo': 'lib/icons/water_temp.png'
-    },
-    {
-      'name': 'Kelembapan',
-      'value': 70,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/hum2.png'
-    },
-    {
-      'name': 'PH',
-      'value': 7.1,
-      'status': 'Normal',
-      'symbol': '',
-      'logo': 'lib/icons/ph_logo.png'
-    },
-    {
-      'name': 'TDS',
-      'value': 600,
-      'status': 'Normal',
-      'symbol': 'ppm',
-      'logo': 'lib/icons/ppm.png'
-    },
-    {
-      'name': 'Oksigen',
-      'value': 120,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/oxi.png'
-    },
-    {
-      'name': 'Level Air',
-      'value': 80,
-      'status': 'Normal',
-      'symbol': '%',
-      'logo': 'lib/icons/water_level.png'
-    },
-  ];
-
-  final List<String> _dropdownItems = [
-    'Tank Lele 1',
-    'Tank Lele 2',
-    'Tank Udang 1',
-    'Tank Udang 2',
-    'Tank Kakap 1',
-    'Tank Kakap 2'
-  ];
-
-  final List<String> _dropdownItemsValue = [
-    's-A0:B7:65:DC:42:F0',
-    's-A0:B7:65:DD:30:44',
-    's-A0:B7:65:DC:5C:44',
-    's-A0:B7:65:DD:C8:E8',
-    's-E0:5A:1B:A1:61:F0',
-    's-A0:B7:65:DC:65:7C'
-  ];
-  bool loading = false;
+  // bool loading = false;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loadingProv = ref.watch(loadingProvider);
+    final idAndName = ref.watch(idAndNamePathProvider);
     final selectedItem = ref.watch(selectedTankProvider);
     final selectedSensorValue = ref.watch(selectedSensorValueProvider);
     final path = ref.watch(childPathProvider);
     final sensorValue = ref.watch(sensorsStreamProvider(path));
-    final minMaxValue = ref.watch(minMaxProvider);
     final sensorName = ref.watch(sensorNameProvider);
 
-    if (sensorValue.isLoading) {
+    if (sensorValue.isLoading || idAndName.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
-    if (!loading) {
+    if (loadingProv) {
       Future.delayed(Duration.zero, () {
-        // Perform initialization or actions after the widget tree is done building
-
         ref.read(selectedSensorValueProvider.notifier).update((state) {
           return sensorValue.value!.temp!.toInt();
         });
       });
-      loading = true;
+      Future.delayed(Duration.zero, () {
+        ref.read(loadingProvider.notifier).state = false;
+      });
     }
 
     return Scaffold(
@@ -127,18 +58,21 @@ class SensorPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TankFisDropdown(
-                      onSelect: (value) {
-                        var index = int.parse(value);
-                        final selectedValue = _dropdownItemsValue[index];
-                        ref.read(selectedTankProvider.notifier).state =
-                            _dropdownItems[index];
-                        ref
-                            .read(childPathProvider.notifier)
-                            .update((state) => selectedValue);
-                      },
-                      selectedItem: selectedItem,
-                      dropdownItems: _dropdownItems,
-                      dropdownItemsValue: _dropdownItemsValue),
+                    onSelect: (value) {
+                      var index = int.parse(value);
+                      final selectedValue =
+                          idAndName.asData!.value[index]['id'];
+                      ref.read(selectedTankProvider.notifier).state =
+                          idAndName.asData!.value[index]['name'];
+                      ref
+                          .read(childPathProvider.notifier)
+                          .update((state) => selectedValue);
+                    },
+                    idAndName: idAndName.asData!.value,
+                    selectedItem: selectedItem,
+                    // dropdownItems: _dropdownItems,
+                    // dropdownItemsValue: _dropdownItemsValue
+                  ),
                   Text(
                     'Sensors',
                     style: GoogleFonts.poppins(

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,30 +14,46 @@ import 'package:tank_fish/providers.dart';
 import 'package:tank_fish/providers/control_servo_provider.dart';
 import 'package:tank_fish/providers/stream_data_sensor.dart';
 
-class DashboardScreen extends ConsumerWidget {
-  DashboardScreen({super.key});
-
-  final List<String> _dropdownItems = [
-    'Tank Lele 1',
-    'Tank Lele 2',
-    'Tank Udang 1',
-    'Tank Udang 2',
-    'Tank Kakap 1',
-    'Tank Kakap 2'
-  ];
-  final lockList = [false, true, true, true, true, true];
-
-  final List<String> _dropdownItemsValue = [
-    's-A0:B7:65:DC:42:F0',
-    's-A0:B7:65:DD:30:44',
-    's-A0:B7:65:DC:5C:44',
-    's-A0:B7:65:DD:C8:E8',
-    's-E0:5A:1B:A1:61:F0',
-    's-A0:B7:65:DC:65:7C'
-  ];
+class DashboardScreen extends ConsumerStatefulWidget {
+  const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  final lockList = [true, true, false, true, true, true];
+  bool loadingOneTime = true;
+
+  // void getData() async {
+  //   final idName = await ref.watch(idAndNamePathProvider);
+  //   if (idName.isLoading) {
+  //     log('Loading');
+  //     loadingOneTime = true;
+  //   } else {
+  //     Future.delayed(Duration(seconds: idName.isLoading ? 1 : 0), () {
+  //       ref.read(childPathProvider.notifier).state =
+  //           idName.asData!.value[0]['id'];
+  //       ref.read(selectedTankProvider.notifier).state =
+  //           idName.asData!.value[0]['name'];
+  //       ref.read(selectedLockProvider.notifier).state = lockList[0];
+  //       loadingOneTime = false;
+  //     });
+  //   }
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Future.delayed(const Duration(seconds: 1), () {
+  //     getData();
+  //   });
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    final loadingProv = ref.watch(loadingDashProvider);
+    final idAndName = ref.watch(idAndNamePathProvider);
     final selectedItem = ref.watch(selectedTankProvider);
     final selectedValue = ref.watch(childPathProvider);
     final selectedLock = ref.watch(selectedLockProvider);
@@ -50,7 +67,8 @@ class DashboardScreen extends ConsumerWidget {
     if (dataSensors.isLoading ||
         deviceInfo.isLoading ||
         schedule.isLoading ||
-        history.isLoading) {
+        history.isLoading ||
+        idAndName.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -58,8 +76,22 @@ class DashboardScreen extends ConsumerWidget {
     if (dataSensors.hasError ||
         deviceInfo.hasError ||
         schedule.hasError ||
-        history.hasError) {
+        history.hasError ||
+        idAndName.hasError) {
       return const Center(child: Text('error'));
+    }
+
+    if (loadingProv) {
+      Future.delayed(Duration.zero, () {
+        ref.read(childPathProvider.notifier).state =
+            idAndName.asData!.value[0]['id'];
+        ref.read(selectedTankProvider.notifier).state =
+            idAndName.asData!.value[0]['name'];
+        ref.read(selectedLockProvider.notifier).state = lockList[0];
+      });
+      Future.delayed(Duration.zero, () {
+        ref.read(loadingDashProvider.notifier).state = false;
+      });
     }
 
     DateTime dateTime =
@@ -83,20 +115,23 @@ class DashboardScreen extends ConsumerWidget {
                   Row(
                     children: [
                       TankFisDropdown(
-                          onSelect: (value) {
-                            var index = int.parse(value);
-                            final selectedValue = _dropdownItemsValue[index];
-                            ref.read(selectedLockProvider.notifier).state =
-                                lockList[index];
-                            ref.read(selectedTankProvider.notifier).state =
-                                _dropdownItems[index];
-                            ref
-                                .read(childPathProvider.notifier)
-                                .update((state) => selectedValue);
-                          },
-                          selectedItem: selectedItem,
-                          dropdownItems: _dropdownItems,
-                          dropdownItemsValue: _dropdownItemsValue),
+                        onSelect: (value) {
+                          var index = int.parse(value);
+                          final selectedValue =
+                              idAndName.asData!.value[index]['id'];
+                          ref.read(selectedLockProvider.notifier).state =
+                              lockList[index];
+                          ref.read(selectedTankProvider.notifier).state =
+                              idAndName.asData!.value[index]['name'];
+                          ref
+                              .read(childPathProvider.notifier)
+                              .update((state) => selectedValue);
+                        },
+                        idAndName: idAndName.asData!.value,
+                        selectedItem: selectedItem,
+                        // dropdownItems: _dropdownItems,
+                        // dropdownItemsValue: _dropdownItemsValue
+                      ),
                     ],
                   ),
                   Row(
@@ -140,7 +175,7 @@ class DashboardScreen extends ConsumerWidget {
                       .ref('automation/au-A0:B7:65:DD:58:50/control/servo')
                       .set(1);
                 },
-                lastFeed: history.value!.last,
+                lastFeed: history.asData?.value.last,
                 schedule: schedule.value,
               ),
               SizedBox(height: 16.h),
