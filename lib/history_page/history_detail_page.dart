@@ -25,7 +25,7 @@ class HistoryDetailPage extends ConsumerStatefulWidget {
 }
 
 class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
-  final filterText = ['Hari ini', 'Bulan ini'];
+  final filterText = ['Hari ini', 'Minggu ini', 'Bulan ini'];
   List<dynamic> myCharData = [];
   int selectedFilter = 0;
   bool loading = true;
@@ -178,6 +178,10 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
                 List<dynamic> valueSens = [];
                 final myData =
                     mysensors(shortedDataList, widget.sensorName, index);
+                final dataSens =
+                    sensorsTest(shortedDataList, widget.sensorName);
+                // log(dataSens.toString());
+
                 // valueSens.addAll(myData);
 
                 // log(valueSens.toString());
@@ -303,7 +307,6 @@ List<Sensors> shortedList(Map<String, dynamic> mapSensor, String shortType) {
       DateFormat dateFormat = DateFormat('M/y');
       String formatedDate = dateFormat.format(dateTime);
       String dateTimeNowFormated = dateFormat.format(DateTime.now());
-      // log('${formatedDate}, ${dateTimeNowFormated}');
       if (formatedDate == dateTimeNowFormated) {
         datalist.add(Sensors.fromJson(value));
       }
@@ -347,6 +350,20 @@ List<dynamic> mysensors(List<Sensors> data, String id, int index) {
     default:
       return [];
   }
+}
+
+List<dynamic> sensorsTest(List<Sensors> data, String id) {
+  List<dynamic> dataList = [];
+
+  if (id == 'Suhu') {
+    for (var element in data) {
+      dataList.addAll([
+        [element.temp, element.time]
+      ]);
+    }
+    return dataList;
+  }
+  return [];
 }
 
 String sensorSymbol(id) {

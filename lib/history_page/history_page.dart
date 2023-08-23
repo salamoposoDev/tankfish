@@ -1,26 +1,18 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tank_fish/constant.dart';
-import 'package:tank_fish/dashboard/widgets/signal_strange.dart';
 import 'package:tank_fish/dashboard/widgets/tankfish_dropdown.dart';
 import 'package:tank_fish/history_page/helper/sensor_data_calculator.dart';
 import 'package:tank_fish/history_page/history_detail_page.dart';
 import 'package:tank_fish/history_page/sensor_card_history.dart';
-import 'package:tank_fish/models/sensors_model.dart';
 import 'package:tank_fish/providers.dart';
 import 'package:tank_fish/providers/stream_data_sensor.dart';
 
-import 'bar_chart.dart';
-
 class HistoryPage extends ConsumerStatefulWidget {
-  HistoryPage({super.key});
+  const HistoryPage({super.key});
 
   @override
   ConsumerState<HistoryPage> createState() => _HistoryPageState();
