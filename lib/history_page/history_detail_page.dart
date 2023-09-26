@@ -1,12 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tank_fish/history_page/bar_chart.dart';
-import 'package:tank_fish/history_page/helper/sensor_data_calculator.dart';
 import 'package:tank_fish/models/sensors_model.dart';
 import 'package:tank_fish/providers.dart';
 import 'package:tank_fish/providers/stream_data_sensor.dart';
@@ -25,7 +23,7 @@ class HistoryDetailPage extends ConsumerStatefulWidget {
 }
 
 class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
-  final filterText = ['Hari ini', 'Bulan ini'];
+  final filterText = ['Harian', 'Migguan', 'Bulanan', 'Tahunan'];
   List<dynamic> myCharData = [];
   int selectedFilter = 0;
   bool loading = true;
@@ -46,7 +44,7 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
     final shortedDataList =
         shortedList(detailSensorHis.asData!.value, selectedSort);
 
-    // log('${widget.id}, ${widget.sensorName}');
+    // log(shortedDataList.toString());
 
     myCharData = [];
 
@@ -75,42 +73,30 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: List.generate(
-                      filterText.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.only(right: 8.h),
-                        child: PilList(
-                          onTap: () {
-                            setState(() {
-                              selectedFilter = index;
-                            });
-                            ref.read(selectedSortProvider.notifier).state =
-                                filterText[index];
-                            loading = true;
-                          },
-                          onSelect: selectedFilter == index ? true : false,
-                          text: filterText[index],
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(
+                        filterText.length,
+                        (index) => Padding(
+                          padding: EdgeInsets.only(right: 8.h),
+                          child: PilList(
+                            onTap: () {
+                              setState(() {
+                                selectedFilter = index;
+                              });
+                              ref.read(selectedSortProvider.notifier).state =
+                                  filterText[index];
+                              loading = true;
+                            },
+                            onSelect: selectedFilter == index ? true : false,
+                            text: filterText[index],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  PilList(
-                    onTap: () {},
-                    text: 'Sort by',
-                  ),
-                  // DropdownButton(
-                  //   hint: Text('Today'),
-                  //   items: [
-                  //     DropdownMenuItem(
-                  //       child: Text('data'),
-                  //       // value: ,
-                  //     ),
-                  //   ],
-                  //   onChanged: (value) {},
-                  //   underline: Container(),
-                  //   iconEnabledColor: Colors.blue,
-                  // ),
                 ],
               ),
             ),
@@ -118,73 +104,15 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
               sensorName: widget.sensorName,
               chartData: charData,
             ),
-            // Divider(
-            //   color: Colors.grey,
-            // ),
-            // Padding(
-            //   padding: EdgeInsets.symmetric(horizontal: 16.w),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Column(
-            //         children: [
-            //           Text(
-            //             'Max',
-            //             style: GoogleFonts.roboto(),
-            //           ),
-            //           Text(
-            //             maxVal.toString(),
-            //             style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
-            //           ),
-            //         ],
-            //       ),
-            //       Column(
-            //         children: [
-            //           Text(
-            //             'Rata-rata',
-            //             style: GoogleFonts.roboto(),
-            //           ),
-            //           Text(
-            //             avVal.toString(),
-            //             style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
-            //           ),
-            //         ],
-            //       ),
-            //       Column(
-            //         children: [
-            //           Text(
-            //             'Min',
-            //             style: GoogleFonts.roboto(),
-            //           ),
-            //           Text(
-            //             minVal.toString(),
-            //             style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
-            //           ),
-            //         ],
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // Divider(
-            //   color: Colors.grey,
-            // ),
             SizedBox(height: 16.h),
             ListView.builder(
               itemCount: shortedDataList.length,
               shrinkWrap: true,
               reverse: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                List<dynamic> valueSens = [];
                 final myData =
                     mysensors(shortedDataList, widget.sensorName, index);
-                // valueSens.addAll(myData);
-
-                // log(valueSens.toString());
-
-                // maxVal = SensorDataCalculator.calculateMax(valueSens);
-                // minVal = SensorDataCalculator.calculateMin(valueSens);
-                // avVal = SensorDataCalculator.calculateAverage(valueSens);
                 myCharData.add(myData);
                 // log(myCharData.length.toString());
                 if (loading) {
@@ -198,6 +126,7 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
                 //   myCharData.add(element);
                 // }
                 // myCharData.addAll([myData[0], myData[1]]);
+
                 final time = timeFormat(myData[1], selectedSort);
                 final symbol = sensorSymbol(widget.sensorName);
                 return Padding(
@@ -222,7 +151,7 @@ class _HistoryDetailPageState extends ConsumerState<HistoryDetailPage> {
                         ),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.timelapse_outlined,
                               size: 20,
                             ),
@@ -290,23 +219,44 @@ List<Sensors> shortedList(Map<String, dynamic> mapSensor, String shortType) {
     int timestamp = value['time'];
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     // log('${formatedDate}, ${dateTimeNowFormated}');
-    if (shortType == 'Hari ini') {
+    if (shortType == 'Harian') {
       DateFormat dateFormat = DateFormat('d/M/y');
       String formatedDate = dateFormat.format(dateTime);
       String dateTimeNowFormated = dateFormat.format(DateTime.now());
       // log('${formatedDate}, ${dateTimeNowFormated}');
       if (formatedDate == dateTimeNowFormated) {
-        datalist.add(Sensors.fromJson(value));
+        return datalist.add(Sensors.fromJson(value));
       }
+      log(datalist.toString());
     }
-    if (shortType == 'Bulan ini') {
+    if (shortType == 'Bulanan') {
       DateFormat dateFormat = DateFormat('M/y');
       String formatedDate = dateFormat.format(dateTime);
       String dateTimeNowFormated = dateFormat.format(DateTime.now());
       // log('${formatedDate}, ${dateTimeNowFormated}');
       if (formatedDate == dateTimeNowFormated) {
-        datalist.add(Sensors.fromJson(value));
+        return datalist.add(Sensors.fromJson(value));
       }
+      log(datalist.toString());
+    }
+
+    if (shortType == 'Mingguan') {
+      DateTime now = DateTime.now();
+      DateTime lastWeek = now.subtract(Duration(days: now.weekday + 7));
+      if (dateTime.isAfter(lastWeek)) {
+        return datalist.add(Sensors.fromJson(value));
+      }
+      log(datalist.toString());
+    }
+
+    if (shortType == 'Tahunan') {
+      DateFormat dateFormat = DateFormat('y');
+      String formatedDate = dateFormat.format(dateTime);
+      String dateTimeNowFormated = dateFormat.format(DateTime.now());
+      if (formatedDate == dateTimeNowFormated) {
+        return datalist.add(Sensors.fromJson(value));
+      }
+      log(datalist.toString());
     }
   });
   datalist.sort((a, b) => a.time!.compareTo(b.time!));
@@ -317,13 +267,21 @@ List<Sensors> shortedList(Map<String, dynamic> mapSensor, String shortType) {
 String timeFormat(int timestamp, String filterBy) {
   String formatedDate = '';
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-  if (filterBy == 'Hari ini') {
+  if (filterBy == 'Harian') {
     DateFormat dateFormat = DateFormat('hh:mm');
-    formatedDate = 'Hari ini, ${dateFormat.format(dateTime)}';
+    return formatedDate = dateFormat.format(dateTime);
   }
-  if (filterBy == 'Bulan ini') {
+  if (filterBy == 'Bulanan') {
     DateFormat dateFormat = DateFormat('d/M/y');
-    formatedDate = dateFormat.format(dateTime);
+    return formatedDate = dateFormat.format(dateTime);
+  }
+  if (filterBy == 'Mingguan') {
+    DateFormat dateFormat = DateFormat('d/M/y');
+    return formatedDate = dateFormat.format(dateTime);
+  }
+  if (filterBy == 'Tahunan') {
+    DateFormat dateFormat = DateFormat('yy');
+    return formatedDate = dateFormat.format(dateTime);
   }
   return formatedDate;
 }
@@ -347,6 +305,17 @@ List<dynamic> mysensors(List<Sensors> data, String id, int index) {
     default:
       return [];
   }
+}
+
+List<Map<String, dynamic>> sensorsTest(List<Sensors> data, String idName) {
+  List<Map<String, dynamic>> mapData = [];
+  if (idName == 'Suhu') {
+    for (var element in data) {
+      mapData.add({'value': element.temp, 'time': element.time});
+    }
+    return mapData;
+  }
+  return [];
 }
 
 String sensorSymbol(id) {
