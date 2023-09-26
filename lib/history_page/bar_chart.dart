@@ -32,7 +32,7 @@ class MyHomePageState extends ConsumerState<HistoryChart> {
   @override
   Widget build(BuildContext context) {
     final selectedSort = ref.watch(selectedSortProvider);
-    log(widget.chartData.length.toString());
+    // log(widget.chartData.toString());
     data.clear();
     for (var i = 0; i < widget.chartData.length; i++) {
       final time = timeFormat(widget.chartData[i][1], selectedSort);
@@ -87,12 +87,20 @@ class ChartData {
 String timeFormat(int timestamp, String filterBy) {
   String formatedDate = '';
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-  if (filterBy == 'Hari ini') {
+  if (filterBy == 'Harian') {
     DateFormat dateFormat = DateFormat('h:m');
     formatedDate = dateFormat.format(dateTime);
   }
-  if (filterBy == 'Bulan ini') {
+  if (filterBy == 'Bulanan') {
     DateFormat dateFormat = DateFormat('d/M');
+    formatedDate = dateFormat.format(dateTime);
+  }
+  if (filterBy == 'Mingguan') {
+    DateFormat dateFormat = DateFormat('d/M');
+    formatedDate = dateFormat.format(dateTime);
+  }
+  if (filterBy == 'Tahunan') {
+    DateFormat dateFormat = DateFormat('yy');
     formatedDate = dateFormat.format(dateTime);
   }
   return formatedDate;

@@ -14,6 +14,6 @@ final minMaxProvider =
 final sensorNameProvider = StateProvider.autoDispose<String>((ref) => 'Suhu');
 
 final selectedSortProvider =
-    StateProvider.autoDispose<String>((ref) => 'Hari ini');
+    StateProvider.autoDispose<String>((ref) => 'Harian');
 
 final chartDataProvider = StateProvider.autoDispose<List<dynamic>>((ref) => []);
