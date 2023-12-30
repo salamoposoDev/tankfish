@@ -51,6 +51,7 @@ dependencies:
   flutter_riverpod: ^2.3.6
   firebase_messaging: ^14.6.5
   blur: ^3.1.0
+  firebase_auth: ^4.10.0
 
 dev_dependencies:
   flutter_test:

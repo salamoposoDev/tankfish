@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import 'package:tank_fish/dashboard/widgets/common_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/device_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/feed_status_card.dart';
 import 'package:tank_fish/dashboard/widgets/tankfish_dropdown.dart';
+import 'package:tank_fish/models/history_schedule_model.dart';
 import 'package:tank_fish/providers.dart';
 import 'package:tank_fish/providers/control_servo_provider.dart';
 import 'package:tank_fish/providers/stream_data_sensor.dart';
@@ -99,104 +99,107 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final status = isDeviceOnline(dateTime);
     final lastUpdate = checkRelativeTime(dataSensors.value!.time!);
 
+    // final refTest = FirebaseDatabase.instance.ref('sensors');
+    // refTest.onValue.listen((event) {
+    //   if (event.snapshot.exists) {
+    //     final data = jsonEncode(event.snapshot.value);
+    //     log(data);
+    //   }
+    // });
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      TankFisDropdown(
-                        onSelect: (value) {
-                          var index = int.parse(value);
-                          final selectedValue =
-                              idAndName.asData!.value[index]['id'];
-                          ref.read(selectedLockProvider.notifier).state =
-                              lockList[index];
-                          ref.read(selectedTankProvider.notifier).state =
-                              idAndName.asData!.value[index]['name'];
-                          ref
-                              .read(childPathProvider.notifier)
-                              .update((state) => selectedValue);
-                        },
-                        idAndName: idAndName.asData!.value,
-                        selectedItem: selectedItem,
-                        // dropdownItems: _dropdownItems,
-                        // dropdownItemsValue: _dropdownItemsValue
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.black,
-                        radius: 16.r,
-                        child: const Icon(
-                          Icons.person,
-                          color: AppColors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        TankFisDropdown(
+                          onSelect: (value) {
+                            var index = int.parse(value);
+                            final selectedValue =
+                                idAndName.asData!.value[index]['id'];
+                            ref.read(selectedLockProvider.notifier).state =
+                                lockList[index];
+                            ref.read(selectedTankProvider.notifier).state =
+                                idAndName.asData!.value[index]['name'];
+                            ref
+                                .read(childPathProvider.notifier)
+                                .update((state) => selectedValue);
+                          },
+                          idAndName: idAndName.asData!.value,
+                          selectedItem: selectedItem,
+                          // dropdownItems: _dropdownItems,
+                          // dropdownItemsValue: _dropdownItemsValue
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              CommonInfoCard(
-                waterTemp: dataSensors.value!.waterTemp!.toInt(),
-                phValue: dataSensors.value!.ph.toString(),
-                oxygenValue: dataSensors.value!.tds,
-              ),
-              // Column(
-              //   children: [
-              //     SizedBox(height: 16.h),
-              //     NotificationCard(),
-              //   ],
-              // ),
-              SizedBox(height: 16.h),
-              Text(
-                'Otomasi',
-                style:
-                    GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
-              ),
-              SizedBox(height: 8.h),
-              FeedStatusCard(
-                disable: selectedLock,
-                servoStatus: servoStatus,
-                onPressed: () {
-                  FirebaseDatabase.instance
-                      .ref('automation/au-A0:B7:65:DD:58:50/control/servo')
-                      .set(1);
-                },
-                lastFeed: history.asData?.value.last,
-                schedule: schedule.value,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Info Perangkat',
-                style:
-                    GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
-              ),
-              SizedBox(height: 8.h),
-              DeviceInfoCard(
-                status: status == true ? 'Online' : 'Offline',
-                rssi: deviceInfo.value!.rssi,
-                ipAddress: deviceInfo.value!.ipAddr,
-                macAddr: deviceInfo.value!.macAddr,
-                time: lastUpdate,
-              ),
-              SizedBox(height: 16.h),
-            ],
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.black,
+                          radius: 16.r,
+                          child: const Icon(
+                            Icons.person,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                CommonInfoCard(
+                  waterTemp: dataSensors.value!.waterTemp!.toInt(),
+                  phValue: dataSensors.value!.ph.toString(),
+                  oxygenValue: dataSensors.value!.tds,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'Otomasi',
+                  style:
+                      GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
+                ),
+                SizedBox(height: 8.h),
+                FeedStatusCard(
+                  disable: selectedLock,
+                  servoStatus: servoStatus,
+                  onPressed: () {
+                    FirebaseDatabase.instance
+                        .ref('automation/au-A0:B7:65:DD:58:50/control/servo')
+                        .set(1);
+                  },
+                  lastFeed: history.asData?.value.last,
+                  schedule: schedule.value,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'Info Perangkat',
+                  style:
+                      GoogleFonts.poppins(color: Colors.black, fontSize: 16.sp),
+                ),
+                SizedBox(height: 8.h),
+                DeviceInfoCard(
+                  status: status == true ? 'Online' : 'Offline',
+                  rssi: deviceInfo.value!.rssi,
+                  ipAddress: deviceInfo.value!.ipAddr,
+                  macAddr: deviceInfo.value!.macAddr,
+                  time: lastUpdate,
+                ),
+                SizedBox(height: 16.h),
+              ],
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 }

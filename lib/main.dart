@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tank_fish/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tank_fish/login/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return const MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: HomePage(),
+          home: LoginPage(),
         );
       },
     );

@@ -129,6 +129,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
         child: CircularProgressIndicator(),
       );
     }
+
     final temp = [];
     final hum = [];
     final watertemp = [];

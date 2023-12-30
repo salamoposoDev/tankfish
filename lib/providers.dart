@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tank_fish/history_page/bar_chart.dart';
 
 final childPathProvider = StateProvider<String>((ref) => 's-E0:5A:1B:A1:61:F0');
 final selectedTankProvider = StateProvider<String>((ref) => 'Tank Kakap 1');
