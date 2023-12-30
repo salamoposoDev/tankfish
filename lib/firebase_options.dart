@@ -44,44 +44,42 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCwPlV6XSmUwGJFqq1kUos40tZetMmSwzQ',
-    appId: '1:703282470352:web:3f1da0787c4c8d89ef6dd5',
-    messagingSenderId: '703282470352',
-    projectId: 'tankfis',
-    authDomain: 'tankfis.firebaseapp.com',
-    databaseURL: 'https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'tankfis.appspot.com',
-    measurementId: 'G-5TDX2BB4WC',
+    apiKey: 'AIzaSyD6kBudBuEBu-pamGPGN1juL1wcfdj2QYQ',
+    appId: '1:841569680247:web:a97f3e9c70763ee4aa3f72',
+    messagingSenderId: '841569680247',
+    projectId: 'tankfis-backup',
+    authDomain: 'tankfis-backup.firebaseapp.com',
+    databaseURL: 'https://tankfis-backup-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'tankfis-backup.appspot.com',
+    measurementId: 'G-3SDDS7YVMG',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDd7uhTjyy7jb1K2W6xGrxiNGiVP7t2cXQ',
-    appId: '1:703282470352:android:a5509065834a5e7def6dd5',
-    messagingSenderId: '703282470352',
-    projectId: 'tankfis',
-    databaseURL: 'https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'tankfis.appspot.com',
+    apiKey: 'AIzaSyDQkHcFPjkcsyEgQ0QfCxee6_E8sVZgbAo',
+    appId: '1:841569680247:android:6ccfb7d4401fb2aeaa3f72',
+    messagingSenderId: '841569680247',
+    projectId: 'tankfis-backup',
+    databaseURL: 'https://tankfis-backup-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'tankfis-backup.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyARygO3c3TiJ1tT7QnBqASyIIJpj2phXAc',
-    appId: '1:703282470352:ios:99c121c3f96e6d17ef6dd5',
-    messagingSenderId: '703282470352',
-    projectId: 'tankfis',
-    databaseURL: 'https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'tankfis.appspot.com',
-    iosClientId: '703282470352-7khs955tdrcev7t6ulrdtd3uubhdvalh.apps.googleusercontent.com',
+    apiKey: 'AIzaSyB6_qy6W4QHB0ZD2dhuQK5iVz_f-w0tCGc',
+    appId: '1:841569680247:ios:11cf04db81a9902aaa3f72',
+    messagingSenderId: '841569680247',
+    projectId: 'tankfis-backup',
+    databaseURL: 'https://tankfis-backup-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'tankfis-backup.appspot.com',
     iosBundleId: 'com.example.tankFish',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyARygO3c3TiJ1tT7QnBqASyIIJpj2phXAc',
-    appId: '1:703282470352:ios:99c121c3f96e6d17ef6dd5',
-    messagingSenderId: '703282470352',
-    projectId: 'tankfis',
-    databaseURL: 'https://tankfis-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'tankfis.appspot.com',
-    iosClientId: '703282470352-7khs955tdrcev7t6ulrdtd3uubhdvalh.apps.googleusercontent.com',
+    apiKey: 'AIzaSyB6_qy6W4QHB0ZD2dhuQK5iVz_f-w0tCGc',
+    appId: '1:841569680247:ios:11cf04db81a9902aaa3f72',
+    messagingSenderId: '841569680247',
+    projectId: 'tankfis-backup',
+    databaseURL: 'https://tankfis-backup-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'tankfis-backup.appspot.com',
     iosBundleId: 'com.example.tankFish',
   );
 }
