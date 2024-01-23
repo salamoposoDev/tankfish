@@ -9,7 +9,6 @@ import 'package:tank_fish/dashboard/widgets/common_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/device_info_card.dart';
 import 'package:tank_fish/dashboard/widgets/feed_status_card.dart';
 import 'package:tank_fish/dashboard/widgets/tankfish_dropdown.dart';
-import 'package:tank_fish/models/history_schedule_model.dart';
 import 'package:tank_fish/providers.dart';
 import 'package:tank_fish/providers/control_servo_provider.dart';
 import 'package:tank_fish/providers/stream_data_sensor.dart';
